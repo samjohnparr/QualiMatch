@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Instruction • QualiMatch</title>
+
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="assets/favicon-180.png" />
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body data-page="instruction">
+  <div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+          <path d="M6 7c3.2 0 3.2 10 6.4 10H18" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M18 17l-3-3m3 3l-3 3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="title">
+        <b>QualiMatch</b>
+        <span>Question ↔ Method practice</span>
+      </div>
+    </div>
+
+    <nav class="nav" aria-label="Site navigation">
+      <a class="pill seedLink" data-nav="home" href="index.html">Home</a>
+      <a class="pill seedLink" data-nav="instruction" href="instruction.html">Instruction</a>
+      <a class="pill seedLink" data-nav="pretest" href="pretest.html">Pretest</a>
+      <a class="pill seedLink" data-nav="practice" href="practice.html">Practice</a>
+      <a class="pill seedLink" data-nav="posttest" href="posttest.html">Posttest</a>
+      <a class="pill seedLink" data-nav="build" href="build.html">Build</a>
+    </nav>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+
+    <div class="card">
+      <div class="inner">
+        <h1>Instruction</h1>
+        <p class="lead">
+          Your job is to make a good match:
+          <b>Research Question</b> → <b>Qualitative Design</b> → <b>Data Source</b>.
+        </p>
+
+        <div class="hr"></div>
+
+        <h2>How scoring works (Pretest / Posttest)</h2>
+        <div class="callout">
+          <p style="margin:0">
+            Each item gives <b>2 points</b>:
+            <span class="kbd">1 point</span> for the correct <b>Design</b> and
+            <span class="kbd">1 point</span> for the correct <b>Data source</b>.
+          </p>
+        </div>
+
+        <h2>Quick design guide</h2>
+        <table class="table" aria-label="Design guide">
+          <thead>
+            <tr>
+              <th>Design</th>
+              <th>What it studies</th>
+              <th>Clues in the RQ</th>
+              <th>Example RQ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Phenomenology</b></td>
+              <td>Lived experience and meaning</td>
+              <td>“lived experience”, “meaning”, “how do they feel”, perceptions</td>
+              <td>What is the lived experience of Grade 11 learners during weekly research consultations?</td>
+            </tr>
+            <tr>
+              <td><b>Case study</b></td>
+              <td>A bounded case: one class, one program, one school</td>
+              <td>Specific setting/section, “this program”, “implementation”</td>
+              <td>How is the peer-tutoring program implemented in Section EROS this quarter?</td>
+            </tr>
+            <tr>
+              <td><b>Ethnography</b></td>
+              <td>Culture, norms, routines of a group/community</td>
+              <td>“culture”, “norms”, “traditions”, “group practices”</td>
+              <td>What classroom norms shape how students participate during group discussions?</td>
+            </tr>
+            <tr>
+              <td><b>Grounded theory</b></td>
+              <td>Build an explanation or process model from data</td>
+              <td>“process”, “stages”, “how it develops”, “model”, “theory”</td>
+              <td>How do students develop strategies to manage academic stress over a quarter?</td>
+            </tr>
+            <tr>
+              <td><b>Narrative inquiry</b></td>
+              <td>Stories across time (journeys, turning points)</td>
+              <td>“story”, “journey”, “over time”, “since”, timeline</td>
+              <td>What stories do working students tell about balancing work and school?</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Quick data source guide</h2>
+        <table class="table" aria-label="Data source guide">
+          <thead>
+            <tr>
+              <th>Data source</th>
+              <th>Best for</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Interview</b></td>
+              <td>Detailed personal explanations</td>
+              <td>Good for phenomenology, grounded theory, narratives.</td>
+            </tr>
+            <tr>
+              <td><b>Focus group</b></td>
+              <td>Shared views, group norms, agreements/disagreements</td>
+              <td>Good for ethnography and school issues with many perspectives.</td>
+            </tr>
+            <tr>
+              <td><b>Observation</b></td>
+              <td>What people actually do in real settings</td>
+              <td>Best for routines, classroom practices, interaction patterns.</td>
+            </tr>
+            <tr>
+              <td><b>Document analysis</b></td>
+              <td>Existing written/posted materials</td>
+              <td>Policies, outputs, reflections, modules (with permission).</td>
+            </tr>
+            <tr>
+              <td><b>Artifact analysis</b></td>
+              <td>Student work or objects that show practice</td>
+              <td>Notebooks, outputs, posters, worksheets, portfolios (with permission).</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>10 strong alignment examples</h2>
+        <div class="grid">
+          <div class="col-6">
+            <div class="itemCard">
+              <div class="itemTitle">Example 1</div>
+              <div class="itemSub"><b>RQ:</b> What is the lived experience of students who failed Mathematics last quarter?</div>
+              <p class="hint"><b>Design:</b> Phenomenology • <b>Data:</b> Interviews</p>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="itemCard">
+              <div class="itemTitle">Example 2</div>
+              <div class="itemSub"><b>RQ:</b> How is the peer-tutoring program implemented in one Grade 11 section?</div>
+              <p class="hint"><b>Design:</b> Case study • <b>Data:</b> Observation + documents</p>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="itemCard">
+              <div class="itemTitle">Example 3</div>
+              <div class="itemSub"><b>RQ:</b> What classroom norms influence participation during recitations?</div>
+              <p class="hint"><b>Design:</b> Ethnography • <b>Data:</b> Observation + focus group</p>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="itemCard">
+              <div class="itemTitle">Example 4</div>
+              <div class="itemSub"><b>RQ:</b> How do students develop study routines across a quarter?</div>
+              <p class="hint"><b>Design:</b> Grounded theory • <b>Data:</b> Interviews + reflections</p>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="itemCard">
+              <div class="itemTitle">Example 5</div>
+              <div class="itemSub"><b>RQ:</b> What stories do transferee students tell about adjusting to a new school?</div>
+              <p class="hint"><b>Design:</b> Narrative inquiry • <b>Data:</b> Interviews</p>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="itemCard">
+              <div class="itemTitle">Example 6</div>
+              <div class="itemSub"><b>RQ:</b> How do learners explain why they prefer online resources over textbooks?</div>
+              <p class="hint"><b>Design:</b> Phenomenology • <b>Data:</b> Interviews</p>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="itemCard">
+              <div class="itemTitle">Example 7</div>
+              <div class="itemSub"><b>RQ:</b> How do group leaders manage conflict during performance tasks?</div>
+              <p class="hint"><b>Design:</b> Grounded theory • <b>Data:</b> Interviews + observation</p>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="itemCard">
+              <div class="itemTitle">Example 8</div>
+              <div class="itemSub"><b>RQ:</b> How do school clubs maintain traditions and group identity?</div>
+              <p class="hint"><b>Design:</b> Ethnography • <b>Data:</b> Observation + documents</p>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="itemCard">
+              <div class="itemTitle">Example 9</div>
+              <div class="itemSub"><b>RQ:</b> How is the research notebook system used by one class?</div>
+              <p class="hint"><b>Design:</b> Case study • <b>Data:</b> Documents + short interviews</p>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="itemCard">
+              <div class="itemTitle">Example 10</div>
+              <div class="itemSub"><b>RQ:</b> What turning points do students describe in learning to speak English confidently?</div>
+              <p class="hint"><b>Design:</b> Narrative inquiry • <b>Data:</b> Interviews</p>
+            </div>
+          </div>
+        </div>
+
+        <h2>What to do next</h2>
+        <div class="btnRow">
+          <a class="btn primary seedLink" href="pretest.html">Start Pretest</a>
+          <a class="btn seedLink" href="practice.html">Go to Practice</a>
+          <a class="btn seedLink" href="build.html">Build Your Own</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">Seeded randomization comes from the URL: add <span class="kbd">?seed=123</span> if your teacher gives you a seed.</div>
+  </div>
+
+  <script src="assets/bank_inline.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

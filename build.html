@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Build • QualiMatch</title>
+
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="assets/favicon-180.png" />
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body data-page="build">
+  <div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+          <path d="M6 7c3.2 0 3.2 10 6.4 10H18" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M18 17l-3-3m3 3l-3 3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="title">
+        <b>QualiMatch</b>
+        <span>Question ↔ Method practice</span>
+      </div>
+    </div>
+
+    <nav class="nav" aria-label="Site navigation">
+      <a class="pill seedLink" data-nav="home" href="index.html">Home</a>
+      <a class="pill seedLink" data-nav="instruction" href="instruction.html">Instruction</a>
+      <a class="pill seedLink" data-nav="pretest" href="pretest.html">Pretest</a>
+      <a class="pill seedLink" data-nav="practice" href="practice.html">Practice</a>
+      <a class="pill seedLink" data-nav="posttest" href="posttest.html">Posttest</a>
+      <a class="pill seedLink" data-nav="build" href="build.html">Build</a>
+    </nav>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+
+    <div class="card">
+      <div class="inner">
+        <h1>Build your own</h1>
+        <p class="lead">
+          Write one qualitative research question and choose a matching design and data source.
+          Save, then download your CSV output.
+        </p>
+
+        <div class="fieldRow">
+          <div class="grow">
+            <label for="pidInput">Participant code</label>
+            <input id="pidInput" type="text" placeholder="e.g., G11-EROS-014" />
+          </div>
+          <div class="shrink">
+            <span id="buildSaved" class="badge good" style="display:none;"><strong>Saved</strong></span>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="grid">
+          <div class="col-6">
+            <label for="b_topic">Research topic</label>
+            <input id="b_topic" type="text" placeholder="e.g., Study habits of Grade 11 learners" />
+          </div>
+          <div class="col-6">
+            <label for="b_design">Qualitative design</label>
+            <select id="b_design"><option value="">Select…</option></select>
+          </div>
+          <div class="col-12">
+            <label for="b_rq">Qualitative research question (RQ)</label>
+            <textarea id="b_rq" placeholder="Write a clear, open-ended qualitative RQ (how / why / what)"></textarea>
+          </div>
+          <div class="col-6">
+            <label for="b_source">Data source</label>
+            <select id="b_source"><option value="">Select…</option></select>
+          </div>
+          <div class="col-6">
+            <label>&nbsp;</label>
+            <div class="btnRow">
+              <button class="btn warn" id="alignBtn">Check alignment</button>
+              <span id="alignBadge" class="badge" style="display:none;"></span>
+            </div>
+          </div>
+          <div class="col-12">
+            <div id="alignText" class="callout" style="display:none;"></div>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="btnRow">
+          <button class="btn primary" id="saveBuildBtn">Save</button>
+          <button class="btn good" id="downloadBuildBtn">Download CSV</button>
+          <button class="btn ghost" id="resetBuildBtn">Clear draft</button>
+          <a class="btn seedLink" href="instruction.html">Instruction</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">Draft is saved automatically while you type (same browser/device).</div>
+  </div>
+
+  <script src="assets/bank_inline.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
