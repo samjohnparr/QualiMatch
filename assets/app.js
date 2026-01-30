@@ -511,28 +511,205 @@ const BUILD_HEADERS = [
   "suggested_design_id","alignment_flag","feedback_text","timestamp_iso","seed"
 ];
 
-function suggestDesignFromRQ(text){
-  const t = (text||"").toLowerCase();
+// ---------- Build: keyword-based alignment engine (v2) ----------
+const BUILD_V2 = {
+  designCues: {
+    phenomenology: {
+      label: "Phenomenology",
+      // lived experience / meaning / feelings / perceptions
+      patterns: [
+        /\b(lived experience|lived experiences)\b/,
+        /\b(experience|experiences)\b/,
+        /\b(meaning|means to|what .* means)\b/,
+        /\b(feel|feels|feeling|feelings|emotions?)\b/,
+        /\b(perception|perceptions|perspective|perspectives|view|views)\b/,
+        /\b(challenges?|struggles?|stress|anxiety|pressure)\b/,
+        /\b(coping|cope|deal with|manage)\b/,
+        /\b(what is it like)\b/
+      ],
+      reason: "Words about experience/meaning/feelings usually fit phenomenology."
+    },
+    case_study: {
+      label: "Case Study",
+      // bounded case: one class/section/school/program
+      patterns: [
+        /\b(case study|case of)\b/,
+        /\b(this school|our school|in (our|this) school)\b/,
+        /\b(section|class|advisory|strand)\b/,
+        /\b(program|project|intervention|initiative|policy)\b/,
+        /\b(implementation|rollout|pilot)\b/,
+        /\b(bounded|specific group)\b/
+      ],
+      reason: "Mentioning one specific class/school/program signals a bounded case (case study)."
+    },
+    ethnography: {
+      label: "Ethnography",
+      // culture / norms / traditions / group ways
+      patterns: [
+        /\b(culture|subculture)\b/,
+        /\b(norms?|unwritten rules|shared rules)\b/,
+        /\b(tradition|traditions|rituals?)\b/,
+        /\b(values|beliefs)\b/,
+        /\b(group identity|identity)\b/,
+        /\b(community|club|organization)\b/,
+        /\b(shared practices|common practices|ways of)\b/
+      ],
+      reason: "Culture/norms/traditions of a group commonly point to ethnography."
+    },
+    grounded_theory: {
+      label: "Grounded Theory",
+      // process / stages / how something develops
+      patterns: [
+        /\b(grounded theory)\b/,
+        /\b(process|processes)\b/,
+        /\b(stages?|steps?)\b/,
+        /\b(develops?|forms?|emerges?)\b/,
+        /\b(how .* happens)\b/,
+        /\b(model|framework|theory)\b/,
+        /\b(mechanism|pathway)\b/,
+        /\b(decision[- ]making|how .* decide|how .* choose)\b/
+      ],
+      reason: "If your RQ is about building an explanation of a process, it fits grounded theory."
+    },
+    narrative_inquiry: {
+      label: "Narrative Inquiry",
+      // story over time / journey / life story
+      patterns: [
+        /\b(narrative|narratives)\b/,
+        /\b(story|stories|life story)\b/,
+        /\b(journey)\b/,
+        /\b(turning point|milestone)\b/,
+        /\b(over time|through time|across time)\b/,
+        /\b(since|from .* to)\b/,
+        /\b(before and after)\b/
+      ],
+      reason: "Story/journey over time fits narrative inquiry."
+    }
+  },
 
-  const has = (re)=> re.test(t);
+  // optional: data source hints per design
+  sourceHints: {
+    phenomenology: ["interview", "focus_group"],
+    case_study: ["interview", "observation", "document_analysis", "artifact_analysis"],
+    ethnography: ["observation", "interview", "artifact_analysis", "document_analysis"],
+    grounded_theory: ["interview", "focus_group", "document_analysis"],
+    narrative_inquiry: ["interview", "document_analysis", "artifact_analysis"]
+  }
+};
 
-  // narrative inquiry: life story / journey / over time
-  if(has(/\b(journey|life story|narrative|story of|over time|since)\b/)) return "narrative_inquiry";
+function buildInferDesignV2(text){
+  const t = (text || "").toLowerCase();
+  const scores = {};
+  const hits = {};
 
-  // ethnography: culture / norms / traditions / group practices
-  if(has(/\b(culture|norms|tradition|ritual|shared practices|community|club|group identity)\b/)) return "ethnography";
+  for(const [id, rule] of Object.entries(BUILD_V2.designCues)){
+    let s = 0;
+    const matched = [];
+    for(const re of rule.patterns){
+      if(re.test(t)){ s += 1; matched.push(re.source); }
+    }
+    scores[id] = s;
+    hits[id] = matched;
+  }
 
-  // case study: bounded program/class/school, specific case
-  if(has(/\b(case|program|intervention|project|section|class\b|school\b|implementation)\b/)) return "case_study";
+  // pick top
+  const ranked = Object.keys(scores).sort((a,b)=> scores[b] - scores[a]);
+  const top = ranked[0];
+  const second = ranked[1];
+  const topScore = scores[top] || 0;
+  const secondScore = scores[second] || 0;
 
-  // grounded theory: process / stages / explain how it develops
-  if(has(/\b(process|stages|how.*develops|how.*forms|model|theory)\b/)) return "grounded_theory";
+  // confidence heuristic
+  // - strong: >=3 and beats second by >=1
+  // - medium: >=2
+  // - weak: 1
+  let confidence = "none";
+  if(topScore >= 3 && topScore >= secondScore + 1) confidence = "strong";
+  else if(topScore >= 2) confidence = "medium";
+  else if(topScore === 1) confidence = "weak";
 
-  // phenomenology: lived experience / meaning / feelings
-  if(has(/\b(lived experience|experience of|meaning of|how.*feel|perceptions?|sense of)\b/)) return "phenomenology";
+  const suggested = (confidence === "none") ? "" : top;
 
-  return "";
+  // compact reason
+  let reason = "";
+  if(suggested){
+    const rule = BUILD_V2.designCues[suggested];
+    reason = rule?.reason || "";
+  }
+
+  return {
+    suggested, confidence,
+    topScore, secondScore,
+    scores, hits,
+    reason
+  };
 }
+
+function buildAlignmentFeedbackV2({topic, rq, chosenDesign, chosenSource, bankRef}){
+  const joined = `${topic || ""} ${rq || ""}`.trim();
+  const inf = buildInferDesignV2(joined);
+
+  const suggested = inf.suggested;
+  const sugLabel = suggested ? (bankRef.DESIGN_LABELS[suggested] || suggested) : "";
+  const chosenLabel = chosenDesign ? (bankRef.DESIGN_LABELS[chosenDesign] || chosenDesign) : "";
+
+  // default (general)
+  let alignment_flag = "ok";
+  let badgeLabel = "Needs more clue";
+  let feedback = "Your RQ is still broad. Add clearer clues: lived experience/meaning, culture/norms, a bounded class/program, a process/steps, or a story over time.";
+
+  // If we have a suggestion
+  if(suggested){
+    // Start with WHY
+    const whyLine = inf.reason ? `Why: ${inf.reason} ` : "";
+
+    if(!chosenDesign){
+      alignment_flag = "ok";
+      badgeLabel = `Suggested: ${sugLabel}`;
+      feedback = `${whyLine}Suggested design: ${sugLabel}. Now select a design and check again to see if it aligns.`;
+    } else if(chosenDesign === suggested){
+      // aligned, but we can scale by confidence
+      alignment_flag = (inf.confidence === "weak") ? "ok" : "good";
+      badgeLabel = (alignment_flag === "good") ? "Aligned" : "Likely aligned";
+      feedback = `${whyLine}Your chosen design (${chosenLabel}) matches what your RQ is asking. Next, choose a data source you can collect within one week.`;
+    } else {
+      // mismatch severity depends on confidence
+      if(inf.confidence === "strong"){
+        alignment_flag = "mismatch";
+        badgeLabel = `Mismatch (suggested: ${sugLabel})`;
+        feedback = `${whyLine}Your RQ wording leans strongly toward ${sugLabel}, but you selected ${chosenLabel}. Either revise the RQ to fit ${chosenLabel} or switch your design to ${sugLabel}.`;
+      } else {
+        alignment_flag = "ok";
+        badgeLabel = `Check fit (suggested: ${sugLabel})`;
+        feedback = `${whyLine}Your RQ could fit more than one design. It slightly leans toward ${sugLabel}, but you chose ${chosenLabel}. Make your wording more specific so the design choice is clear.`;
+      }
+    }
+
+    // Add optional data source hint (if a source is chosen)
+    if(chosenSource){
+      const recommended = BUILD_V2.sourceHints[suggested] || [];
+      if(recommended.length && !recommended.includes(chosenSource)){
+        const recLabels = recommended.map(id=> bankRef.SOURCE_LABELS[id]).filter(Boolean).join(" or ");
+        feedback += ` Data source tip: For ${sugLabel}, students usually use ${recLabels}.`;
+      }
+    }
+  }
+
+  return {
+    suggested_design_id: suggested,
+    alignment_flag,
+    badgeLabel,
+    feedback_text: feedback
+  };
+}
+
+
+function suggestDesignFromRQ(text){
+  // keep function for compatibility, but use v2 inference
+  const inf = buildInferDesignV2(text || "");
+  return inf.suggested || "";
+}
+
 
 function initBuild(b){
   const seed = getSeed();
@@ -572,42 +749,37 @@ function initBuild(b){
   });
 
   $("#alignBtn").addEventListener("click", ()=>{
-    const rq = ($("#b_rq").value||"").trim();
-    if(!rq){ toast("Write your research question first."); $("#b_rq").focus(); return; }
+  const rq = ($("#b_rq").value||"").trim();
+  if(!rq){ toast("Write your research question first."); $("#b_rq").focus(); return; }
 
-    const suggested = suggestDesignFromRQ(rq);
-    const chosen = ($("#b_design").value||"").trim();
+  const topic = ($("#b_topic").value||"").trim();
+  const chosenDesign = ($("#b_design").value||"").trim();
+  const chosenSource = ($("#b_source").value||"").trim();
 
-    let flag = "ok";
-    let label = "Try to be more specific";
-    let fb = "Your RQ is a bit general. Add clues like lived experience, culture/norms, a bounded program/class, a process, or a story over time.";
-
-    if(suggested){
-      const sugLabel = b.DESIGN_LABELS[suggested];
-      if(!chosen){
-        flag = "ok";
-        label = `Suggested: ${sugLabel}`;
-        fb = `Your RQ wording looks most similar to ${sugLabel}. Select a design, then check again.`;
-      } else if(chosen === suggested){
-        flag = "good";
-        label = "Aligned";
-        fb = "Your chosen design matches your RQ intent. Next, pick a data source that you can realistically collect within one week.";
-      } else {
-        flag = "mismatch";
-        label = `Mismatch (suggested: ${sugLabel})`;
-        fb = `Your RQ wording suggests ${sugLabel}, but you selected a different design. Either revise the RQ wording or change your design choice so they match.`;
-      }
-    }
-
-    $("#alignBadge").style.display = "inline-flex";
-    $("#alignBadge").className = "badge " + (flag==="good" ? "good" : (flag==="mismatch" ? "bad" : "warn"));
-    $("#alignBadge").innerHTML = `<strong>${label}</strong>`;
-    $("#alignText").style.display = "block";
-    $("#alignText").className = "callout " + (flag==="good" ? "good" : (flag==="mismatch" ? "bad" : "warn"));
-    $("#alignText").textContent = fb;
-
-    window.__BUILD_ALIGN__ = { suggested_design_id: suggested, alignment_flag: flag, feedback_text: fb };
+  const out = buildAlignmentFeedbackV2({
+    topic,
+    rq,
+    chosenDesign,
+    chosenSource,
+    bankRef: b
   });
+
+  $("#alignBadge").style.display = "inline-flex";
+  $("#alignBadge").className = "badge " + (out.alignment_flag==="good" ? "good" : (out.alignment_flag==="mismatch" ? "bad" : "warn"));
+  $("#alignBadge").innerHTML = `<strong>${out.badgeLabel}</strong>`;
+
+  $("#alignText").style.display = "block";
+  $("#alignText").className = "callout " + (out.alignment_flag==="good" ? "good" : (out.alignment_flag==="mismatch" ? "bad" : "warn"));
+  $("#alignText").textContent = out.feedback_text;
+
+  // store for CSV
+  window.__BUILD_ALIGN__ = {
+    suggested_design_id: out.suggested_design_id,
+    alignment_flag: out.alignment_flag,
+    feedback_text: out.feedback_text
+  };
+});
+
 
   $("#saveBuildBtn").addEventListener("click", ()=>{
     const pidNow = getPid() || "__anon__";
@@ -619,7 +791,23 @@ function initBuild(b){
     const s = ($("#b_source").value||"").trim();
     if(!rq || !d || !s){ toast("Fill in your RQ, Design, and Data source."); return; }
 
-    const align = window.__BUILD_ALIGN__ || {suggested_design_id:"", alignment_flag:"ok", feedback_text:""};
+    // If learner didn't click "Check alignment", run it once automatically
+if(!window.__BUILD_ALIGN__){
+  const out = buildAlignmentFeedbackV2({
+    topic,
+    rq,
+    chosenDesign: d,
+    chosenSource: s,
+    bankRef: b
+  });
+  window.__BUILD_ALIGN__ = {
+    suggested_design_id: out.suggested_design_id,
+    alignment_flag: out.alignment_flag,
+    feedback_text: out.feedback_text
+  };
+}
+const align = window.__BUILD_ALIGN__ || {suggested_design_id:"", alignment_flag:"ok", feedback_text:""};
+
     const row = {
       pid: pidNow,
       phase:"build",
